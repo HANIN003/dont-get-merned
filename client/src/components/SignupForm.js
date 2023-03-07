@@ -19,7 +19,7 @@ const SignupForm = () => {
   // set state for alert
   const [showAlert, setShowAlert] = useState(false);
 
-  const [addUser, { error }] = useMutation(ADD_USER);
+  const [addUser, { error, data }] = useMutation(ADD_USER);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -30,27 +30,20 @@ const SignupForm = () => {
     event.preventDefault();
 
     // check if form has everything (as per react-bootstrap docs)
-    // const form = event.currentTarget;
-    // if (form.checkValidity() === false) {
-    //   event.preventDefault();
-    //   event.stopPropagation();
-    // }
+    const form = event.currentTarget;
+    if (form.checkValidity() === false) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
 
     try {
       const { data } = await addUser({
         variables: { ...userFormData },
       });
 
-      // if (!response.ok) {
-      //   throw new Error("something went wrong!");
-      // }
-
-      // const { token, user } = await response.json();
-      console.log(data);
       Auth.login(data.addUser.token);
     } catch (e) {
       console.error(e);
-      setShowAlert(true);
     }
 
     setUserFormData({
@@ -74,7 +67,7 @@ const SignupForm = () => {
           Something went wrong with your signup!
         </Alert>
 
-        <Form.Group className="mb-3">
+        <Form.Group>
           <Form.Label htmlFor="username">Username</Form.Label>
           <Form.Control
             type="text"
@@ -89,7 +82,7 @@ const SignupForm = () => {
           </Form.Control.Feedback>
         </Form.Group>
 
-        <Form.Group className="mb-3">
+        <Form.Group>
           <Form.Label htmlFor="email">Email</Form.Label>
           <Form.Control
             type="email"
@@ -104,7 +97,7 @@ const SignupForm = () => {
           </Form.Control.Feedback>
         </Form.Group>
 
-        <Form.Group className="mb-3">
+        <Form.Group>
           <Form.Label htmlFor="password">Password</Form.Label>
           <Form.Control
             type="password"

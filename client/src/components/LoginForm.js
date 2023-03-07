@@ -13,7 +13,7 @@ const LoginForm = () => {
   const [validated] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
 
-  const [loginUser, { error }] = useMutation(LOGIN_USER);
+  const [login, { error, data }] = useMutation(LOGIN_USER);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -24,28 +24,21 @@ const LoginForm = () => {
     event.preventDefault();
 
     // check if form has everything (as per react-bootstrap docs)
-    // const form = event.currentTarget;
-    // if (form.checkValidity() === false) {
-    //   event.preventDefault();
-    //   event.stopPropagation();
-    // }
+    const form = event.currentTarget;
+    if (form.checkValidity() === false) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
 
     try {
-      const { data } = await loginUser({
+      const { data } = await login({
         variables: { ...userFormData },
       });
 
-      // if (!response.ok) {
-      //   throw new Error("something went wrong!");
-      // }
-
-      // const { token, user } = await response.json();
-      console.log(data);
       Auth.login(data.login.token);
     } catch (e) {
       console.error(e);
-      setShowAlert(true);
-    }
+    };
 
     setUserFormData({
       username: "",
@@ -65,7 +58,7 @@ const LoginForm = () => {
         >
           Something went wrong with your login credentials!
         </Alert>
-        <Form.Group className="mb-3">
+        <Form.Group>
           <Form.Label htmlFor="email">Email</Form.Label>
           <Form.Control
             type="text"
@@ -80,7 +73,7 @@ const LoginForm = () => {
           </Form.Control.Feedback>
         </Form.Group>
 
-        <Form.Group className="mb-3">
+        <Form.Group>
           <Form.Label htmlFor="password">Password</Form.Label>
           <Form.Control
             type="password"
